@@ -58,5 +58,15 @@
         "description": "",
         "contact": "Sita",
         "image": ""
+    },
+    {
+        "title": "wallet",
+        "status": "LOST",
+        "category": "Accessories",
+        "location": "class 101 E",
+        "date": "2026-08-19",
+        "description": "",
+        "contact": "",
+        "image": ""
     }
 ]

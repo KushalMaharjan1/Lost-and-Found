@@ -7,9 +7,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import user_passes_test
 
-# Only accounts with admin/staff status may edit or delete a record.
-# Reporting a new item stays open to everyone, admin or not.
-admin_required = user_passes_test(lambda u: u.is_active and u.is_staff, login_url="login")
+admin_required = user_passes_test(lambda user: user.is_active and user.is_staff, login_url="login")
 
 CSV_FILE = "data/lost_found.csv"
 JSON_FILE = "data/lost_found.json"
@@ -144,7 +142,7 @@ def report(request):
 
         new_item = {
             "title": request.POST.get("title", "").strip(),
-            "status": request.POST.get("status", "LOST"),
+            "status": request.POST.get("status", "LOST") if request.POST.get("status") in {"LOST", "FOUND"} else "LOST",
             "category": request.POST.get("category", "").strip(),
             "location": request.POST.get("location", "").strip(),
             "date": request.POST.get("date", "").strip(),
