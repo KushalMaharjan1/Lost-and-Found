@@ -28,7 +28,7 @@ A Django web application for reporting, browsing, editing, and resolving lost an
    pip install -r requirements.txt
    ```
 
-The application stores item records in `data/lost_found.csv`. Django authentication is used for staff-only editing and deletion. Run `python manage.py migrate` once, then create the staff account with `python manage.py createsuperuser`.
+The application stores item records in `data/lost_found.csv`. A shared admin login protects editing and deletion, so other users do not need to run migrations or create a superuser.
 
 ## Usage
 
@@ -83,5 +83,5 @@ Python 3.12, Django 6.1, CSV, JSON, HTML, CSS
 ## Known Limitations
 
 - Items are addressed by their row position in the CSV rather than a permanent ID, so concurrent edits by multiple users could shift indexes.
-- Anyone can browse items and submit lost or found reports; only staff users can edit, delete, or mark items as resolved.
+- Anyone can browse items and submit lost or found reports; only the shared admin login can edit, delete, or mark items as resolved.
 - No file/photo upload for items.

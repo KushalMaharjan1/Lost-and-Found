@@ -326,8 +326,8 @@
         <a href="{% url 'home' %}">Home</a>
         <a href="{% url 'items' %}">Browse Items</a>
         <a href="{% url 'report' %}">Report Item</a>
-        {% if user.is_authenticated %}
-            <span style="margin-left:30px; color:#8B8367; font-size:13px;">{{ user.username }}</span>
+        {% if admin_access %}
+            <span style="margin-left:30px; color:#8B8367; font-size:13px;">admin</span>
             <form method="post" action="{% url 'logout' %}" style="display:inline;">
                 {% csrf_token %}
                 <button type="submit" style="background:none; border:none; color:#D8CDB4; font-size:13.5px; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; cursor:pointer; margin-left:14px; padding:0;">Log Out</button>
