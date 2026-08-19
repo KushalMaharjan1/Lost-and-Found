@@ -1,0 +1,74 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<div class="eyebrow">New Claim</div>
+<h1 class="page-title">Report Lost or Found Item</h1>
+<p class="page-subtitle">Fill in what you know — you can always come back and edit it later.</p>
+
+<div class="card">
+<div class="card-pad">
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="form-group">
+            <label>Title *</label>
+            <input type="text" name="title" placeholder="e.g. Black Wallet" required>
+        </div>
+        <div class="form-group">
+            <label>Status *</label>
+            <select name="status">
+                <option value="LOST">Lost</option>
+                <option value="FOUND">Found</option>
+                <option value="RESOLVED">Resolved</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Category</label>
+            <select name="category">
+                <option value="Electronics">Electronics</option>
+                <option value="Jewelry">Jewelry</option>
+                <option value="Documents">Documents</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Keys">Keys</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Other" selected>Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Location</label>
+            <input type="text" name="location" placeholder="e.g. Library">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" name="date">
+        </div>
+        <div class="form-group">
+            <label>Contact</label>
+            <input type="text" name="contact" placeholder="Your name">
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:18px;">
+        <label>Description</label>
+        <textarea name="description" rows="4" placeholder="Any identifying details — color, brand, contents..."></textarea>
+    </div>
+
+    <div class="form-group" style="margin-bottom:24px;">
+        <label>Photo (optional)</label>
+        <input type="file" name="image" accept="image/*">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Report</button>
+    <button type="reset" class="btn btn-ghost">Reset</button>
+</form>
+</div>
+</div>
+
+{% endblock %}

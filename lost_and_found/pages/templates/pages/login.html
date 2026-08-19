@@ -1,0 +1,51 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<div class="eyebrow">Staff Access</div>
+<h1 class="page-title">Sign In</h1>
+<p class="page-subtitle">Editing or deleting a record requires an admin account. Anyone can report an item without signing in.</p>
+
+<div class="card" style="max-width: 380px;">
+<div class="card-pad">
+
+    {% if form.non_field_errors %}
+        <div style="background: var(--stamp-red-bg); color: var(--stamp-red); padding: 12px 14px; border-radius: 7px; margin-bottom: 18px; font-size: 13.5px;">
+            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group" style="margin-bottom:18px;">
+            <label for="id_username">Username</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div style="color: var(--stamp-red); font-size: 12px; margin-top: 4px;">
+                    {% for error in form.username.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group" style="margin-bottom:22px;">
+            <label for="id_password">Password</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div style="color: var(--stamp-red); font-size: 12px; margin-top: 4px;">
+                    {% for error in form.password.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Sign In</button>
+    </form>
+
+    <p style="text-align:center; color: var(--ink-soft); font-size: 12.5px; margin: 20px 0 0;">
+        Just browsing? You don't need an account to search or view items.
+    </p>
+
+</div>
+</div>
+
+{% endblock %}

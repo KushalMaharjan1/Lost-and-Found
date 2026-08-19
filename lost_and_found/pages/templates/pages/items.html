@@ -1,0 +1,84 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<div class="eyebrow">Ledger</div>
+<h1 class="page-title">Browse Items</h1>
+<p class="page-subtitle">Search and filter every lost and found report on file.</p>
+
+<div class="card" style="margin-bottom:22px;">
+    <div class="card-pad" style="padding:22px 24px;">
+        <form method="get" style="display:flex; gap:12px; align-items:flex-end;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Search</label>
+                <input type="text" name="q" placeholder="Title or location..." value="{{ query }}">
+            </div>
+            <div class="form-group" style="max-width:180px; margin-bottom:0;">
+                <label>Status</label>
+                <select name="status">
+                    <option value="">All statuses</option>
+                    <option value="LOST" {% if status_filter == "LOST" %}selected{% endif %}>Lost</option>
+                    <option value="FOUND" {% if status_filter == "FOUND" %}selected{% endif %}>Found</option>
+                    <option value="RESOLVED" {% if status_filter == "RESOLVED" %}selected{% endif %}>Resolved</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="height:44px;">Search</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <table class="ledger">
+        <tr>
+            <th style="width:52px;"></th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>Location</th>
+            <th>Date</th>
+            <th></th>
+        </tr>
+        {% for idx, item in items %}
+        <tr>
+            <td>
+                {% if item.image %}
+                    <img class="thumb" src="/media/{{ item.image }}" alt="{{ item.title }}">
+                {% else %}
+                    <div class="thumb-placeholder">—</div>
+                {% endif %}
+            </td>
+            <td>{{ item.title }}</td>
+            <td>
+                {% if item.status == "LOST" %}
+                    <span class="stamp stamp-lost">Lost</span>
+                {% elif item.status == "FOUND" %}
+                    <span class="stamp stamp-found">Found</span>
+                {% else %}
+                    <span class="stamp stamp-resolved">Resolved</span>
+                {% endif %}
+            </td>
+            <td>{{ item.category }}</td>
+            <td>{{ item.location }}</td>
+            <td class="mono">{{ item.date }}</td>
+            <td style="white-space:nowrap;">
+                <a class="view-link" href="{% url 'detail' idx %}">View</a>
+                {% if user.is_staff %}
+                &nbsp;·&nbsp;
+                <a class="view-link" href="{% url 'edit_item' idx %}">Edit</a>
+                &nbsp;·&nbsp;
+                <form method="post" action="{% url 'delete_item' idx %}" style="display:inline;" onsubmit="return confirm('Delete this item?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger">Delete</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="empty-state">No items match this search. Try a different keyword or clear the filter.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

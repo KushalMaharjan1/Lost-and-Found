@@ -1,0 +1,72 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="{% url 'home' %}">Home</a> /
+    <a href="{% url 'items' %}">Items</a> /
+    Item Details
+</div>
+
+<div class="card">
+<div class="card-pad">
+{% if item %}
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:24px; margin-bottom:20px;">
+        <div>
+            <div class="eyebrow">Claim Record</div>
+            <h1 style="font-size:26px;">{{ item.title }}</h1>
+        </div>
+        {% if item.status == "LOST" %}
+            <span class="stamp stamp-lost" style="font-size:13px; padding:6px 14px;">Lost</span>
+        {% elif item.status == "FOUND" %}
+            <span class="stamp stamp-found" style="font-size:13px; padding:6px 14px;">Found</span>
+        {% else %}
+            <span class="stamp stamp-resolved" style="font-size:13px; padding:6px 14px;">Resolved</span>
+        {% endif %}
+    </div>
+
+    {% if item.image %}
+        <img src="/media/{{ item.image }}" alt="{{ item.title }}" class="item-photo" style="max-width:320px; margin-bottom:22px;">
+    {% endif %}
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px 32px; margin-bottom:20px;">
+        <div>
+            <div class="tally-label" style="margin-bottom:4px;">Category</div>
+            <div>{{ item.category }}</div>
+        </div>
+        <div>
+            <div class="tally-label" style="margin-bottom:4px;">Location</div>
+            <div>{{ item.location }}</div>
+        </div>
+        <div>
+            <div class="tally-label" style="margin-bottom:4px;">Date</div>
+            <div class="mono">{{ item.date }}</div>
+        </div>
+        <div>
+            <div class="tally-label" style="margin-bottom:4px;">Contact</div>
+            <div>{{ item.contact }}</div>
+        </div>
+    </div>
+
+    <div style="margin-bottom:24px;">
+        <div class="tally-label" style="margin-bottom:4px;">Description</div>
+        <div>{{ item.description }}</div>
+    </div>
+{% else %}
+    <p class="empty-state">Item not found.</p>
+{% endif %}
+
+    <div style="display:flex; gap:10px; align-items:center; padding-top:16px; border-top:1px dashed var(--paper-deep);">
+        <a class="btn btn-outline" href="{% url 'items' %}">Back to Items</a>
+        {% if user.is_staff %}
+        <a class="btn btn-ghost" href="{% url 'edit_item' item_id %}">Edit</a>
+        <form method="post" action="{% url 'delete_item' item_id %}" onsubmit="return confirm('Delete this item?');">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger">Delete</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+</div>
+
+{% endblock %}

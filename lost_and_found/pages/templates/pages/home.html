@@ -1,0 +1,86 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+
+<section class="ticket">
+    <div class="ticket-info">
+        <div class="eyebrow">Claims Desk · Est. Today</div>
+        <h1>Lost &amp; Found Management</h1>
+        <p>Report a lost or found item, search open claims, and track what's been resolved — all in one ledger.</p>
+    </div>
+    <div class="ticket-seam">
+        <span class="notch notch-top"></span>
+        <span class="notch notch-bottom"></span>
+    </div>
+    <div class="ticket-stub">
+        <div class="stub-label">Admit One Report</div>
+        <a class="btn btn-primary" href="{% url 'report' %}">＋ Report an Item</a>
+        <div class="stub-code">NO. {{ total }} ON FILE</div>
+    </div>
+</section>
+
+<div class="tally-row">
+    <div class="tally-chip">
+        <div class="tally-num">{{ total }}</div>
+        <div class="tally-label">Total Filed</div>
+    </div>
+    <div class="tally-chip">
+        <div class="tally-num">{{ lost }}</div>
+        <div class="tally-label">Lost</div>
+    </div>
+    <div class="tally-chip">
+        <div class="tally-num">{{ found }}</div>
+        <div class="tally-label">Found</div>
+    </div>
+    <div class="tally-chip">
+        <div class="tally-num">{{ resolved }}</div>
+        <div class="tally-label">Resolved</div>
+    </div>
+</div>
+
+<h3 style="font-size:16px; margin-bottom:14px;">Recent Reports</h3>
+
+<div class="card">
+    <table class="ledger">
+        <tr>
+            <th style="width:52px;"></th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>Location</th>
+            <th>Date</th>
+        </tr>
+        {% for item in recent_items %}
+        <tr>
+            <td>
+                {% if item.image %}
+                    <img class="thumb" src="/media/{{ item.image }}" alt="{{ item.title }}">
+                {% else %}
+                    <div class="thumb-placeholder">—</div>
+                {% endif %}
+            </td>
+            <td>{{ item.title }}</td>
+            <td>
+                {% if item.status == "LOST" %}
+                    <span class="stamp stamp-lost">Lost</span>
+                {% elif item.status == "FOUND" %}
+                    <span class="stamp stamp-found">Found</span>
+                {% else %}
+                    <span class="stamp stamp-resolved">Resolved</span>
+                {% endif %}
+            </td>
+            <td>{{ item.category }}</td>
+            <td>{{ item.location }}</td>
+            <td class="mono">{{ item.date }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="empty-state">No reports filed yet.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+
+<p style="margin-top: 18px;">
+    <a class="view-link" href="{% url 'items' %}">View all items →</a>
+</p>
+
+{% endblock %}
