@@ -58,7 +58,7 @@
 
     <div style="display:flex; gap:10px; align-items:center; padding-top:16px; border-top:1px dashed var(--paper-deep);">
         <a class="btn btn-outline" href="{% url 'items' %}">Back to Items</a>
-        {% if user.is_staff %}
+        {% if admin_access %}
         <a class="btn btn-ghost" href="{% url 'edit_item' item_id %}">Edit</a>
         <form method="post" action="{% url 'delete_item' item_id %}" onsubmit="return confirm('Delete this item?');">
             {% csrf_token %}

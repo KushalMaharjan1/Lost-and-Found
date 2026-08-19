@@ -2,19 +2,72 @@ import csv
 import json
 import os
 import time
+from functools import wraps
 
 from django.conf import settings
+from django.core import signing
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import user_passes_test
+from django.urls import reverse
+from django.utils.crypto import constant_time_compare
+from django.utils.http import url_has_allowed_host_and_scheme
 
-# Only accounts with admin/staff status may edit or delete a record.
-# Reporting a new item stays open to everyone, admin or not.
-admin_required = user_passes_test(lambda u: u.is_active and u.is_staff, login_url="login")
+ADMIN_COOKIE = "lost_found_admin"
+
+
+def is_admin(request):
+    try:
+        return signing.loads(
+            request.COOKIES.get(ADMIN_COOKIE, ""),
+            salt="lost-found-admin",
+            max_age=settings.ADMIN_SESSION_AGE,
+        ) == settings.ADMIN_USERNAME
+    except signing.BadSignature:
+        return False
+
+
+def admin_required(view):
+    @wraps(view)
+    def wrapped(request, *args, **kwargs):
+        if not is_admin(request):
+            login_url = f"{reverse('login')}?next={request.get_full_path()}"
+            return redirect(login_url)
+        return view(request, *args, **kwargs)
+
+    return wrapped
 
 CSV_FILE = "data/lost_found.csv"
 JSON_FILE = "data/lost_found.json"
 
 FIELDNAMES = ["title", "status", "category", "location", "date", "description", "contact", "image"]
+
+
+def login_view(request):
+    if is_admin(request):
+        return redirect("home")
+
+    next_url = request.POST.get("next") or request.GET.get("next") or reverse("home")
+    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        next_url = reverse("home")
+
+    error = ""
+    if request.method == "POST":
+        username = request.POST.get("username", "")
+        password = request.POST.get("password", "")
+        if constant_time_compare(username, settings.ADMIN_USERNAME) and constant_time_compare(password, settings.ADMIN_PASSWORD):
+            response = redirect(next_url)
+            signed_user = signing.dumps(settings.ADMIN_USERNAME, salt="lost-found-admin")
+            response.set_cookie(ADMIN_COOKIE, signed_user, max_age=settings.ADMIN_SESSION_AGE, httponly=True, samesite="Lax")
+            return response
+        error = "Invalid username or password."
+
+    return render(request, "pages/login.html", {"error": error, "next": next_url})
+
+
+def logout_view(request):
+    response = redirect("home")
+    response.delete_cookie(ADMIN_COOKIE)
+    return response
 
 
 def read_items():
@@ -144,7 +197,7 @@ def report(request):
 
         new_item = {
             "title": request.POST.get("title", "").strip(),
-            "status": request.POST.get("status", "LOST"),
+            "status": request.POST.get("status", "LOST") if request.POST.get("status") in {"LOST", "FOUND"} else "LOST",
             "category": request.POST.get("category", "").strip(),
             "location": request.POST.get("location", "").strip(),
             "date": request.POST.get("date", "").strip(),

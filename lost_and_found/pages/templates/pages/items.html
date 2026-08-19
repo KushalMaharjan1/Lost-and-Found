@@ -62,7 +62,7 @@
             <td class="mono">{{ item.date }}</td>
             <td style="white-space:nowrap;">
                 <a class="view-link" href="{% url 'detail' idx %}">View</a>
-                {% if user.is_staff %}
+                {% if admin_access %}
                 &nbsp;·&nbsp;
                 <a class="view-link" href="{% url 'edit_item' idx %}">Edit</a>
                 &nbsp;·&nbsp;
